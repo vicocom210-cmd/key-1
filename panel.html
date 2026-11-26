@@ -1,0 +1,10 @@
+<!doctype html><html lang="uz"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalitlar boshqaruvi</title>
+<style>
+*{box-sizing:border-box}body{font:16px/1.5 system-ui,sans-serif;color:#172438;background:#f4f6fa;margin:0}main{max-width:900px;margin:8vh auto;padding:20px}section,aside{background:white;padding:20px;border:1px solid #dce2eb;border-radius:12px;margin:16px 0;overflow:auto}h1,h2{margin:0 0 12px}label{display:inline-grid;margin:0 12px 8px 0}input,button{font:inherit;padding:8px 12px;border-radius:6px;border:1px solid #c1c8d2}button{background:#23467a;color:white;cursor:pointer}td,th{text-align:left;padding:10px;border-bottom:1px solid #ddd}table{width:100%;border-collapse:collapse}code{overflow-wrap:anywhere}aside{border-color:#319476}
+</style><main><h1>Kalitlar boshqaruvi</h1>{{notice}}
+<section><h2>Kalit yaratish</h2><form action="/admin/create" method="post">{{token}}
+<label>Kalit nomi<input name="label" required maxlength="80" placeholder="Masalan, sinov kaliti"></label>
+<label>Muddat (kun)<input name="days" type="number" required min="1" max="3650" value="1"></label>
+<button>Yaratish</button></form></section>
+<section><h2>Kalitlar</h2><table><thead><tr><th>Nomi</th><th>Tugash vaqti (Toshkent)</th><th>Holati</th><th>Amal</th></tr></thead><tbody>{{rows}}</tbody></table></section></main></html>
