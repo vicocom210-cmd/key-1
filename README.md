@@ -8,15 +8,14 @@ Python 3.11 yoki yangiroq versiyasini ishlating. ZIP faylini ochib, app.py turga
 
 ~~~powershell
 py -m pip install -r requirements.txt
-$env:ADMIN_PASSWORD = Read-Host "Yangi admin parolini kiriting (kamida 16 belgi)"
 py app.py
 ~~~
 
-Brauzerda http://127.0.0.1:8080 ni oching. Login admin, parol yuqorida kiritilgan qiymat.
+Brauzerda http://127.0.0.1:8080 ni oching. Login khakimovv1. ZIP ichidagi admin.password faylida siz belgilagan parol bor. Ushbu fayl shaxsiy va Git tomonidan e’tiborga olinmaydi.
 
 ## Hosting
 
-Python web service uchun build buyrug‘i pip install -r requirements.txt va start buyrug‘i python app.py. ADMIN_PASSWORD ni hostingning maxfiy sozlamasiga kiriting. HOST qiymatini 0.0.0.0 qiling. Server hosting bergan PORT ni o‘qiydi. HTTPS ishlating. Bitta server jarayoni va doimiy disk talab qilinadi. Masalan, doimiy disk /var/data manziliga ulangan bo‘lsa, LICENSE_DB=/var/data/licenses.sqlite3 belgilang. Lokal standart joy data/licenses.sqlite3.
+Python web service uchun build buyrug‘i pip install -r requirements.txt va start buyrug‘i python app.py. Hostingda ADMIN_PASSWORD ga belgilagan parolingizni kiriting. Standart login khakimovv1, uni ADMIN_USERNAME orqali o‘zgartirish mumkin. HOST qiymatini 0.0.0.0 qiling. Server hosting bergan PORT ni o‘qiydi. HTTPS ishlating. Bitta server jarayoni va doimiy disk talab qilinadi. Masalan, doimiy disk /var/data manziliga ulangan bo‘lsa, LICENSE_DB=/var/data/licenses.sqlite3 belgilang. Lokal standart joy data/licenses.sqlite3.
 
 ## Ilovadan tekshirish
 

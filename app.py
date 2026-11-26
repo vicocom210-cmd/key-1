@@ -11,10 +11,14 @@ from pathlib import Path
 from aiohttp import web
 
 DATABASE = Path(os.environ.get("LICENSE_DB", "data/licenses.sqlite3"))
-PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
-if len(PASSWORD) < 16:
-    raise SystemExit("ADMIN_PASSWORD kamida 16 belgidan iborat bo‘lishi kerak.")
-AUTH = "Basic " + base64.b64encode(("admin:" + PASSWORD).encode()).decode()
+USERNAME = os.environ.get("ADMIN_USERNAME", "khakimovv1")
+PASSWORD = os.environ.get("ADMIN_PASSWORD")
+if PASSWORD is None:
+    local_password = Path(__file__).with_name("admin.password")
+    PASSWORD = local_password.read_text(encoding="utf-8").rstrip("\r\n") if local_password.is_file() else ""
+if not PASSWORD:
+    raise SystemExit("ADMIN_PASSWORD ni sozlang.")
+AUTH = "Basic " + base64.b64encode(f"{USERNAME}:{PASSWORD}".encode()).decode()
 CSRF = secrets.token_urlsafe(32)
 SECURITY_HEADERS = {"Cache-Control": "no-store", "X-Frame-Options": "DENY",
                     "X-Content-Type-Options": "nosniff"}
@@ -46,13 +50,11 @@ async def protect(request, handler):
             form = await request.post()
             if form.get("csrf") != CSRF:
                 raise web.HTTPForbidden()
-    try:
-        response = await handler(request)
-    except web.HTTPException as error:
-        error.headers.update(SECURITY_HEADERS)
-        raise
+    return await handler(request)
+
+
+async def set_response_headers(request, response):
     response.headers.update(SECURITY_HEADERS)
-    return response
 
 
 def panel(new_key=None):
@@ -95,9 +97,12 @@ async def create(request):
 
 
 async def revoke(request):
+    identifier = request.match_info["id"].lstrip("0") or "0"
+    if len(identifier) > 19 or int(identifier) > 2**63 - 1:
+        raise web.HTTPNotFound(text="Bunday kalit topilmadi.")
     with database() as db:
         changed = db.execute("UPDATE licenses SET revoked=1 WHERE id=?",
-                             (int(request.match_info["id"]),)).rowcount
+                             (int(identifier),)).rowcount
     if not changed:
         raise web.HTTPNotFound(text="Bunday kalit topilmadi.")
     raise web.HTTPSeeOther("/")
@@ -126,8 +131,9 @@ with database() as db:
         expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0)""")
 
 app = web.Application(middlewares=[protect], client_max_size=8192)
+app.on_response_prepare.append(set_response_headers)
 app.add_routes([web.get("/", index), web.post("/admin/create", create),
-                web.post(r"/admin/{id:\d+}/revoke", revoke), web.post("/api/licenses/verify", verify)])
+                web.post(r"/admin/{id:[0-9]+}/revoke", revoke), web.post("/api/licenses/verify", verify)])
 
 if __name__ == "__main__":
     web.run_app(app, host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", "8080")))
